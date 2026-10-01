@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>급여톡 - 급여·시급·주휴수당·퇴직금 계산기</title>
+<meta name="description" content="급여톡에서 시급, 월급, 주휴수당, 연봉, 퇴직금, 야간·연장근로 수당을 간편하게 계산하세요.">
+<meta name="keywords" content="급여계산기, 시급계산기, 월급계산기, 주휴수당계산기, 연봉계산기, 퇴직금계산기, 야간수당, 연장수당">
+<meta name="robots" content="index,follow">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f6f7f9;color:#17191c;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",Arial,sans-serif}
+.wrap{max-width:900px;margin:auto;padding:18px 15px 60px}.top{display:flex;justify-content:space-between;align-items:center;padding:8px 0 20px}
+.brand{font-size:23px;font-weight:900}.brand span{font-size:12px;color:#777;margin-left:6px}
+.hero{background:#111;color:#fff;border-radius:22px;padding:24px 20px;margin-bottom:14px}.hero h1{margin:0 0 8px;font-size:27px}.hero p{margin:0;color:#c9cdd2;line-height:1.5}
+nav{display:flex;gap:7px;overflow:auto;padding:2px 1px 7px;scrollbar-width:none}nav::-webkit-scrollbar{display:none}
+.tab{white-space:nowrap;border:1px solid #dfe3e8;background:#fff;border-radius:12px;padding:11px 13px;font-weight:800;cursor:pointer}.tab.active{background:#111;color:#fff;border-color:#111}
+.card{background:#fff;border:1px solid #e2e5e9;border-radius:18px;padding:19px;margin-top:12px}.card h2{font-size:19px;margin:0 0 15px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+label{display:block;font-size:14px;font-weight:800}input,select{width:100%;margin-top:7px;border:1px solid #d6dbe1;border-radius:11px;padding:12px;font-size:16px;background:#fff}
+.btn{width:100%;border:0;border-radius:12px;padding:14px;margin-top:16px;background:#111;color:#fff;font-size:16px;font-weight:900;cursor:pointer}.copy{background:#eef0f2;color:#111;margin-top:9px}
+.result{margin-top:15px;padding:17px;border-radius:14px;background:#f1f3f5}.result small{display:block;color:#68717b;margin-bottom:4px}.result strong{font-size:29px}.rows{margin-top:12px}.row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #e1e4e7}.row:last-child{border:0}
+.info{color:#68717b;font-size:13px;line-height:1.65;margin-top:12px}.hidden{display:none}.notice{background:#fff8e6;border:1px solid #f0dfad;color:#67511b;border-radius:13px;padding:12px;font-size:13px;line-height:1.55;margin-top:12px}
+@media(max-width:580px){.grid{grid-template-columns:1fr}.top{padding-top:3px}.hero h1{font-size:24px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="top"><div class="brand">급여톡 <span>PAY CALCULATOR</span></div></header>
+
+<section class="hero"><h1>급여 계산기</h1><p>월급부터 시급, 주휴수당, 연봉, 퇴직금까지 한 번에 계산하세요.</p></section>
+
+<nav aria-label="계산기 메뉴">
+<button class="tab active" data-id="salary">월급↔시급</button>
+<button class="tab" data-id="weekly">주휴수당</button>
+<button class="tab" data-id="annual">연봉</button>
+<button class="tab" data-id="overtime">연장·야간</button>
+<button class="tab" data-id="severance">퇴직금</button>
+</nav>
+
+<section id="salary" class="card panel">
+<h2>월급 ↔ 시급 계산기</h2>
+<div class="grid">
+<label>계산 방향<select id="sMode"><option value="m2h">월급 → 시급</option><option value="h2m">시급 → 월급</option></select></label>
+<label>금액 (원)<input id="sPay" inputmode="numeric" value="2500000"></label>
+<label>하루 근무시간<input id="sHours" inputmode="decimal" value="8"></label>
+<label>주 근무일수<input id="sDays" inputmode="decimal" value="5"></label>
+</div>
+<button class="btn" onclick="calcSalary()">계산하기</button><div id="sResult" class="result"></div>
+<button class="btn copy" onclick="copyResult('sResult')">결과 복사</button>
+<p class="info">월 환산은 주당 근로시간을 연간 기준으로 환산한 단순 계산입니다. 실제 급여는 근로계약 및 수당 조건에 따라 달라질 수 있습니다.</p>
+</section>
+
+<section id="weekly" class="card panel hidden">
+<h2>주휴수당 계산기</h2>
+<div class="grid">
+<label>시급 (원)<input id="wPay" inputmode="numeric" value="10320"></label>
+<label>주 근무시간<input id="wHours" inputmode="decimal" value="40"></label>
+<label>주 근무일수<input id="wDays" inputmode="decimal" value="5"></label>
+</div>
+<button class="btn" onclick="calcWeekly()">계산하기</button><div id="wResult" class="result"></div>
+<button class="btn copy" onclick="copyResult('wResult')">결과 복사</button>
+<p class="info">주휴수당은 실제 근로계약, 소정근로일, 개근 여부 등 법적 요건에 따라 달라질 수 있습니다. 아래 계산은 일반적인 주 40시간 근무 예시를 기준으로 한 참고용 계산입니다.</p>
+</section>
+
+<section id="annual" class="card panel hidden">
+<h2>연봉 ↔ 월급 계산기</h2>
+<div class="grid">
+<label>연봉 (원)<input id="aYear" inputmode="numeric" value="40000000"></label>
+<label>상여·수당 포함 여부<select id="aMode"><option>연봉을 12개월로 단순 분할</option></select></label>
+</div>
+<button class="btn" onclick="calcAnnual()">계산하기</button><div id="aResult" class="result"></div>
+<button class="btn copy" onclick="copyResult('aResult')">결과 복사</button>
+<p class="info">세금과 4대보험을 제외한 세전 단순 환산입니다. 실제 월 지급액은 회사의 급여 구성에 따라 달라질 수 있습니다.</p>
+</section>
+
+<section id="overtime" class="card panel hidden">
+<h2>연장·야간근로 수당 계산기</h2>
+<div class="grid">
+<label>기본 시급 (원)<input id="oPay" inputmode="numeric" value="10320"></label>
+<label>연장근로 시간<input id="oHours" inputmode="decimal" value="2"></label>
+<label>야간근로 시간<input id="oNight" inputmode="decimal" value="0"></label>
+<label>휴일근로 시간<input id="oHoliday" inputmode="decimal" value="0"></label>
+</div>
+<button class="btn" onclick="calcOvertime()">계산하기</button><div id="oResult" class="result"></div>
+<button class="btn copy" onclick="copyResult('oResult')">결과 복사</button>
+<p class="info">가산율은 일반적인 계산 예시를 위한 값입니다. 적용 대상과 가산 범위는 근로조건과 법령 적용 여부에 따라 확인이 필요합니다.</p>
+</section>
+
+<section id="severance" class="card panel hidden">
+<h2>퇴직금 간편 계산기</h2>
+<div class="grid">
+<label>최근 3개월 세전 급여 합계 (원)<input id="rPay" inputmode="numeric" value="7500000"></label>
+<label>근속일수<input id="rDays" inputmode="numeric" value="365"></label>
+</div>
+<button class="btn" onclick="calcSeverance()">계산하기</button><div id="rResult" class="result"></div>
+<button class="btn copy" onclick="copyResult('rResult')">결과 복사</button>
+<p class="info">퇴직금은 평균임금 산정과 계속근로기간 등에 따라 실제 금액이 달라질 수 있습니다. 이 계산기는 개략적인 참고용입니다.</p>
+</section>
+
+<section class="card">
+<h2>급여톡 계산기는 이렇게 사용하세요</h2>
+<p class="info">시급, 월급, 주휴수당, 연봉, 연장·야간근로, 퇴직금을 빠르게 확인할 수 있도록 구성했습니다. 계산 결과는 참고용이며 실제 임금은 근로계약서와 급여명세서를 우선 확인하세요.</p>
+<div class="notice">※ 본 서비스는 법률·노무·세무 자문이 아니며, 입력값을 이용한 계산 결과를 제공합니다.</div>
+</section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const n=id=>Number($(id).value.replace(/,/g,''));
+const won=x=>Math.round(x).toLocaleString('ko-KR')+'원';
+const ok=(...x)=>x.every(v=>Number.isFinite(v)&&v>=0);
+
+function calcSalary(){
+ const pay=n('sPay'),h=n('sHours'),d=n('sDays');
+ if(!ok(pay,h,d)||h<=0||d<=0||d>7){alert('입력값을 확인해주세요.');return}
+ const mh=h*d*52/12;
+ const out=$('sResult');
+ if($('sMode').value==='m2h'){
+  const hourly=pay/mh;
+  out.innerHTML=`<small>예상 시급</small><strong>${won(hourly)}</strong><div class="rows"><div class="row"><span>주 근무시간</span><b>${(h*d).toFixed(1)}시간</b></div><div class="row"><span>월 환산시간</span><b>${mh.toFixed(1)}시간</b></div></div>`;
+ }else{
+  const monthly=pay*mh;
+  out.innerHTML=`<small>예상 월급</small><strong>${won(monthly)}</strong><div class="rows"><div class="row"><span>주 근무시간</span><b>${(h*d).toFixed(1)}시간</b></div><div class="row"><span>월 환산시간</span><b>${mh.toFixed(1)}시간</b></div></div>`;
+ }
+}
+function calcWeekly(){
+ const pay=n('wPay'),hours=n('wHours'),days=n('wDays');
+ if(!ok(pay,hours,days)||pay<=0||hours<=0||days<=0||days>7){alert('입력값을 확인해주세요.');return}
+ const weeklyHoliday=Math.min(hours,40)/days;
+ const amount=pay*weeklyHoliday;
+ $('wResult').innerHTML=`<small>예상 주휴수당</small><strong>${won(amount)}</strong><div class="rows"><div class="row"><span>주휴 인정시간(참고)</span><b>${weeklyHoliday.toFixed(2)}시간</b></div><div class="row"><span>주 근무시간</span><b>${hours.toFixed(2)}시간</b></div></div>`;
+}
+function calcAnnual(){
+ const y=n('aYear');
+ if(!ok(y)||y<=0){alert('연봉을 입력해주세요.');return}
+ $('aResult').innerHTML=`<small>월 세전 금액</small><strong>${won(y/12)}</strong><div class="rows"><div class="row"><span>연봉</span><b>${won(y)}</b></div><div class="row"><span>월 환산</span><b>${won(y/12)}</b></div></div>`;
+}
+function calcOvertime(){
+ const p=n('oPay'),e=n('oHours'),ng=n('oNight'),hd=n('oHoliday');
+ if(!ok(p,e,ng,hd)||p<=0){alert('입력값을 확인해주세요.');return}
+ const ext=p*e*1.5, night=p*ng*0.5, holiday=p*hd*1.5;
+ $('oResult').innerHTML=`<small>가산분 포함 예상 수당</small><strong>${won(ext+night+holiday)}</strong><div class="rows"><div class="row"><span>연장근로 계산액</span><b>${won(ext)}</b></div><div class="row"><span>야간 가산분</span><b>${won(night)}</b></div><div class="row"><span>휴일근로 계산액</span><b>${won(holiday)}</b></div></div>`;
+}
+function calcSeverance(){
+ const p=n('rPay'),days=n('rDays');
+ if(!ok(p,days)||p<=0||days<=0){alert('입력값을 확인해주세요.');return}
+ const avgDaily=p/90;
+ const amount=avgDaily*30*(days/365);
+ $('rResult').innerHTML=`<small>퇴직금 간편 추정액</small><strong>${won(amount)}</strong><div class="rows"><div class="row"><span>1일 평균임금 단순값</span><b>${won(avgDaily)}</b></div><div class="row"><span>근속기간</span><b>${days.toLocaleString('ko-KR')}일</b></div></div>`;
+}
+async function copyResult(id){
+ const text=$(id).innerText.trim();
+ try{await navigator.clipboard.writeText(text);alert('결과가 복사되었습니다.')}catch(e){alert('복사 기능을 사용할 수 없습니다. 결과를 길게 눌러 복사해주세요.')}
+}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
+ document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+ document.querySelectorAll('.panel').forEach(x=>x.classList.add('hidden'));
+ b.classList.add('active');$(b.dataset.id).classList.remove('hidden');
+}));
+calcSalary();
+</script>
+</body>
+</html>
